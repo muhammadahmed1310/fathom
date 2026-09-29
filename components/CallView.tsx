@@ -39,7 +39,7 @@ function WaitingCall({ meeting }: { meeting: Meeting }) {
         <AvatarStack people={attendees} />
         <span className="text-sm text-muted">{attendees.map((person) => person.name).join(", ")}</span>
       </div>
-      <div className="mt-8 rounded-2xl border border-line bg-white px-5 py-6">
+      <div className="panel mt-8 rounded-2xl px-5 py-6">
         <p className="font-medium">{scheduled ? "Fathom will join this call" : "Fathom is writing the notes"}</p>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
           {scheduled
@@ -187,7 +187,7 @@ function ReadyCall({ meeting, initialTime }: { meeting: Meeting; initialTime: nu
   return (
     <div className="flex h-full min-h-0 flex-col lg:flex-row">
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <div className="border-b border-line bg-white px-4 py-3 lg:px-6">
+        <div className="border-b border-white/60 bg-white/75 px-4 py-3 backdrop-blur lg:px-6">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <Link href="/" className="inline-flex items-center gap-1 text-sm text-muted">
@@ -209,7 +209,7 @@ function ReadyCall({ meeting, initialTime }: { meeting: Meeting; initialTime: nu
               {shareOpen ? (
                 <>
                   <button type="button" aria-label="Close share menu" className="fixed inset-0 z-10 cursor-default" onClick={() => setShareOpen(false)} />
-                  <div className="absolute right-0 z-20 mt-2 w-80 rounded-xl border border-line bg-white p-3 shadow-lg">
+                  <div className="absolute right-0 z-20 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-xl border border-line bg-white p-3 shadow-lg">
                     <p className="text-xs font-medium uppercase tracking-wide text-muted">Clips</p>
                     <ul className="mt-2 space-y-2">
                       {clips.map((clip) => (
@@ -404,7 +404,7 @@ function ReadyCall({ meeting, initialTime }: { meeting: Meeting; initialTime: nu
         </div>
       </div>
 
-      <aside className="min-h-0 w-full overflow-y-auto border-t border-line bg-white lg:w-[400px] lg:border-l lg:border-t-0">
+      <aside className="min-h-0 w-full overflow-y-auto border-t border-white/60 bg-white/80 backdrop-blur lg:w-[420px] lg:border-l lg:border-t-0">
         <div className="px-4 py-4">
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-sm font-medium">Summary</h2>
@@ -446,33 +446,61 @@ function ReadyCall({ meeting, initialTime }: { meeting: Meeting; initialTime: nu
             </div>
           )}
 
-          <h2 className="mt-8 text-sm font-medium">Action items</h2>
-          <p className="mt-1 text-xs text-muted">{openActions} open</p>
-          <ul className="mt-3 space-y-3">
-            {meeting.actions.map((action) => {
-              const owner = peopleById[action.ownerId];
-              const checked = done.includes(action.id);
-              return (
-                <li key={action.id} className="flex gap-2">
-                  <button
-                    type="button"
-                    aria-pressed={checked}
-                    onClick={() => toggleAction(action.id)}
-                    className={`mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border ${checked ? "border-accent bg-accent text-white" : "border-line"}`}
-                    aria-label={checked ? "Mark action open" : "Mark action done"}
-                  >
-                    {checked ? "✓" : ""}
-                  </button>
-                  <div>
-                    <p className={`text-sm leading-relaxed ${checked ? "text-muted line-through" : ""}`}>{action.text}</p>
-                    <button type="button" onClick={() => seek(action.at)} className="mt-0.5 text-xs text-muted">
-                      {owner?.name} · {action.due} · {formatClock(action.at)}
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <div className="mt-8 flex items-baseline justify-between gap-2">
+            <h2 className="text-sm font-medium">Action items</h2>
+            <p className="text-xs text-muted">{openActions} open</p>
+          </div>
+          <div className="table-wrap mt-3 rounded-xl border border-line">
+            <table className="data compact">
+              <colgroup>
+                <col className="w-10" />
+                <col />
+                <col className="w-16" />
+                <col className="w-24" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>
+                  <span className="sr-only">Done</span>
+                </th>
+                  <th>Action</th>
+                  <th>Owner</th>
+                  <th>Due</th>
+                </tr>
+              </thead>
+              <tbody>
+                {meeting.actions.map((action) => {
+                  const owner = peopleById[action.ownerId];
+                  const checked = done.includes(action.id);
+                  return (
+                    <tr key={action.id}>
+                      <td>
+                        <button
+                          type="button"
+                          aria-pressed={checked}
+                          onClick={() => toggleAction(action.id)}
+                          className={`grid h-4 w-4 place-items-center rounded border ${checked ? "border-accent bg-accent text-white" : "border-line bg-white"}`}
+                          aria-label={checked ? "Mark action open" : "Mark action done"}
+                        >
+                          {checked ? "✓" : ""}
+                        </button>
+                      </td>
+                      <td className={`leading-snug ${checked ? "text-muted line-through" : ""}`}>{action.text}</td>
+                      <td className="text-muted" title={owner?.name}>
+                        {owner?.name.split(" ")[0]}
+                      </td>
+                      <td>
+                        <button type="button" onClick={() => seek(action.at)} className="text-left text-muted">
+                          {action.due}
+                          <span className="mt-0.5 block tabular-nums text-xs">{formatClock(action.at)}</span>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
           {meeting.followUp ? (
             <div className="mt-8">

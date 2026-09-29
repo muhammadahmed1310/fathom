@@ -25,8 +25,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
 
   return (
-    <div className="flex h-dvh min-h-0 bg-paper text-ink">
-      <aside className="hidden w-56 shrink-0 flex-col border-r border-line bg-white md:flex">
+    <div className="workspace flex h-dvh min-h-0 text-ink">
+      <aside className="panel hidden w-60 shrink-0 flex-col border-r border-white/60 md:flex">
         <Link href="/" className="flex items-center gap-2.5 px-4 py-4">
           <Mark />
           <span className="text-[15px] font-semibold tracking-tight">Fathom</span>
@@ -39,7 +39,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             id="nav-search"
             name="q"
             placeholder="Search meetings"
-            className="w-full rounded-lg border border-line bg-paper px-3 py-2 text-sm outline-none placeholder:text-muted"
+            className="w-full rounded-lg border border-white/80 bg-white/70 px-3 py-2 text-sm outline-none placeholder:text-muted"
           />
         </form>
         <nav className="flex flex-col gap-0.5 px-2">
@@ -51,7 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 key={link.href}
                 href={link.href}
                 aria-current={active ? "page" : undefined}
-                className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm ${active ? "bg-accent-soft font-medium text-accent" : "text-ink hover:bg-paper"}`}
+                className={`flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm ${active ? "bg-white font-medium text-accent shadow-sm" : "text-ink hover:bg-white/60"}`}
               >
                 <Icon size={16} strokeWidth={1.75} />
                 {link.label}
@@ -59,22 +59,34 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="mt-auto border-t border-line px-4 py-4">
+        <div className="mt-auto border-t border-white/70 px-4 py-4">
           <p className="text-sm font-medium">{viewer.name}</p>
           <p className="text-xs text-muted">Northwind · open workspace</p>
         </div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-line bg-white px-4 py-3 md:hidden">
+        <header className="flex items-center gap-3 border-b border-white/50 bg-white/70 px-4 py-3 backdrop-blur md:hidden">
           <Mark />
           <span className="font-semibold">Fathom</span>
-          <nav className="ml-auto flex gap-3 text-sm">
-            <Link href="/">Meetings</Link>
-            <Link href="/search">Search</Link>
-            <Link href="/calendar">Calendar</Link>
-          </nav>
         </header>
         <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
+        <nav className="grid shrink-0 grid-cols-3 border-t border-white/70 bg-white/85 backdrop-blur md:hidden">
+          {links.map((link) => {
+            const active = link.match(path);
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                className={`flex flex-col items-center gap-1 py-2.5 text-[11px] ${active ? "font-medium text-accent" : "text-muted"}`}
+              >
+                <Icon size={18} strokeWidth={1.75} />
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
       </div>
     </div>
   );

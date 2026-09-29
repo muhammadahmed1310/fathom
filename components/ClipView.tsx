@@ -47,8 +47,8 @@ export function ClipView({
   const speaker = spoken ? peopleById[spoken.speakerId] : undefined;
 
   return (
-    <div className="min-h-dvh bg-paper">
-      <header className="border-b border-line bg-white">
+    <div className="workspace min-h-dvh">
+      <header className="border-b border-white/60 bg-white/75 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-4">
           <Link href="/" className="text-sm font-semibold">
             Fathom
